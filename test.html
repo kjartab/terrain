@@ -1,0 +1,117 @@
+<html>
+
+<head>
+
+</head>
+
+
+<body>
+
+
+    <script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
+    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/lib/leaflet/leaflet.js"></script>
+	<script src="/assets/lib/three/three.js"></script>
+    <script src="/assets/lib/three/extensions/trackballControls.js"></script>
+	
+	<div id="webgl" style="width=800 height=1500"></div>
+
+
+
+<script type="x-shader/x-vertex" id="vertexShader">
+ /**
+ * Multiply each vertex by the model-view matrix
+ * and the projection matrix (both provided by
+ * Three.js) to get a final vertex position
+ */
+void main() {
+    gl_Position = projectionMatrix *
+                  modelViewMatrix *
+                  vec4(position,1.0);
+}   
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+	/**
+ * Set the colour to a lovely pink.
+ * Note that the color is a 4D Float
+ * Vector, R,G,B and A and each part
+ * runs from 0.0 to 1.0
+ */
+void main() {
+    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+}
+    
+</script>
+	
+	
+	
+<script>
+
+	
+		var geometry, plane, material, renderer;
+		var camera;
+		var scene;
+		var controls;
+		var directionalLight;
+		var terrainGeometry;
+		var width = 1500;
+		height = 800;
+		
+		
+			camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 60000);
+			camera.position.set(0, -30, 30);	
+
+			controls = new THREE.TrackballControls(camera); 
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setSize(width, height);
+			renderer.setClearColor( 0xcccccc, 1);
+
+			scene = new THREE.Scene();
+			
+			document.getElementById('webgl').appendChild(renderer.domElement);
+		
+			var material = new THREE.ShaderMaterial({
+			  vertexShader: document.getElementById('vertexShader').textContent,
+			  fragmentShader: document.getElementById('fragmentShader').textContent
+			});
+			
+			// set up the sphere vars
+			var radius = 50, segments = 16, rings = 16;
+
+			// create a new mesh with sphere geometry -
+			// we will cover the sphereMaterial next!
+			var sphere = new THREE.Mesh(
+			   new THREE.SphereGeometry(radius,
+			   segments,
+			   rings),
+
+			   material);
+
+			// add the sphere to the scene
+			scene.add(sphere);
+			// create a point light
+			var pointLight = new THREE.PointLight( 0xFFFFFF );
+
+			// set its position
+			pointLight.position.x = 10;
+			pointLight.position.y = 50;
+			pointLight.position.z = 130;
+
+			// add to the scene
+			scene.add(pointLight);
+    
+		
+			render();
+			
+		
+		function render() {
+		    controls.update();  
+			requestAnimationFrame(render);
+			renderer.render(scene, camera);
+		}
+
+</script>
+</body>
+
+</html>

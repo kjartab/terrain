@@ -1,0 +1,105 @@
+	<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+
+    <title>Terrain</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/leaflet.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/terrain.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/leaflet.draw.css"/>
+	
+	
+</head>
+  
+<body>
+  
+    <script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
+    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/lib/leaflet/leaflet.js"></script>
+	<script src="/assets/lib/leaflet/extensions/leaflet.draw.js"></script>
+    <script src="/assets/common/mapApps/cloudy.js"></script>
+  
+    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
+		<div class="container">
+			<div class="navbar-header">
+			<a class="navbar-brand" href="#">Terrain</a>
+			</div>
+		</div>
+    </div>
+	
+<div class="wrapper">
+	<div class="col-lg-12" id="innhald">
+		<div id="map"></div>
+	</div>
+	
+</div>
+   
+	<script>
+		
+	$(window).resize(function () {
+		var h = $(window).height(), offsetTop = 40;
+		$('#map').css('height', h-offsetTop);
+		$('body').css('height', h);
+	}).resize();
+	
+	cloudy = new Cloud('map', 'vis.html');
+
+	function getCloud() {
+		return cloudy;
+	}
+	
+			function style(feature) {
+			switch(feature.geometry.type) {
+				case 'Polygon':
+					return {	
+						fillColor: "#2233dd",
+						weight: 1,
+						opacity: 1,
+						color: "#2233dd",
+						fillOpacity: 0.3
+					};
+				break;
+				
+				case 'Point':
+					return {
+						fillColor: "#2233dd",
+						weight: 1,
+						opacity: 0.8,
+						color: "#2233dd",
+						fillOpacity: 0.9
+					};
+				break;
+			}
+		}
+		
+		function onEachFeature(feature, layer) {
+				
+		}
+
+	
+		
+		$.getJSON('data/rasteroverview', function (data) {
+			
+			console.log(data);
+			for (i=0; i<data.length; i++) {					
+				geojson.addData(JSON.parse(data[i][0]), {onEachFeature: onEachFeature, style : style});
+			}
+		});
+			
+		
+		$.getJSON('http://localhost:8080/geoserver/usa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=usa%3Astates&maxfeatures=50&outputformat=application%2Fjson', function (data) {
+			geojson.addData(JSON.parse(data));
+			
+		});
+			
+	</script>
+
+</body>
+</html>

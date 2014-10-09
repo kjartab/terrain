@@ -1,0 +1,23 @@
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+.wrapper {
+	min-height: 100%;
+}
+
+body {
+  color: #ffffff;
+  height:100%;
+}
+
+#map {
+	width: 100%;
+}
+
+
+#innhald {
+	padding-top: 40px;
+	padding-left: 0px;
+	padding-right: 0px;
+}

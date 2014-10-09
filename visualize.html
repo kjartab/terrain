@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <title>Terrain Mapping</title>
+
+    <link href="css/leaflet.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/viewer.css" rel="stylesheet">	
+</head>
+<body>	
+	<script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
+    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+	<script src="/assets/lib/three/three.js"></script>
+    <script src="/assets/lib/leaflet/leaflet.js"></script>
+    <script src="/assets/lib/three/extensions/trackballControls.js"></script>
+    <script src="/assets/lib/three/extensions/water-material.js"></script>
+	
+    <script src="/assets/common/threeExtras/world.js"></script>	
+    <script src="/assets/common/threeExtras/simpleTrack.js"></script>
+	
+    <script src="/assets/common/loaders/simpleXYZload.js"></script>
+    <script src="/assets/common/loaders/WKBloader.js"></script>
+	
+	
+  
+  <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Terrain</a>
+        </div>
+      </div>	
+    </div>
+	
+		<div id="content">
+			<div id="webgl"></div>
+		</div>
+
+      
+<script>
+	
+
+	$(window).resize(function () {
+		var h = $(window).height(), offsetTop = $('#navbar').height();
+		$('#content').css('height', h-offsetTop+3);
+		$('#webgl').css('height', h-offsetTop+3);
+		$('body').css('height', h-offsetTop+3);
+		
+	}).resize();
+	
+	
+	
+	
+	function getUrlVars() {
+		var vars = {};
+		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+		});
+		return vars;
+	}
+	
+	var outline = getUrlVars()["outline"];
+	var table = getUrlVars()["table"];
+	
+    var width  = $('#content').width(),
+        height = $('#content').height();
+	
+	
+	var worldRef;
+	
+	var terrainGeometry, plane, material;
+	var camera;
+	var scene;
+	var controls;
+	var directionalLight;
+	
+
+	function init() {
+		camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 60000);
+		camera.position.set(0, -30, 30);	
+		controls = new THREE.TrackballControls(camera); 
+		
+		renderer = new THREE.WebGLRenderer( { antialias: true } );
+		renderer.setSize(width, height);
+		renderer.setClearColor( 0xffffff, 1);
+		
+		scene = new THREE.Scene();
+		scene.add(new THREE.AmbientLight(0x222222));
+		scene.scale = new THREE.Vector3(0.01,0.01,0.01);
+		directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+		directionalLight.position.set(-600, 300, 600);
+		scene.add(directionalLight);
+		
+		document.getElementById('webgl').appendChild(renderer.domElement);
+		render();
+	}
+		
+
+	worldReference.init(1/100,32632);
+	console.log(worldReference);
+	var xyzRequest = new XMLHttpRequest();
+	
+	xyzRequest.open("GET", '../data/rasters/rasterdata/?format=xyz&outline='+outline+'&table='+table, true);
+	xyzRequest.onreadystatechange = function() {
+		if(xyzRequest.readyState==4){
+			
+			
+			
+			var material = new THREE.MeshLambertMaterial({  color: 0xefefef, shading: THREE.SmoothShading})
+			
+			terrainGeometry = xyzLoader.loadData(xyzRequest.responseText,worldReference);
+			
+			var plane = new THREE.Mesh( terrainGeometry,material);
+			window.scene.add(plane);
+		}
+		
+	}
+	xyzRequest.send();
+	
+	function render() {
+		controls.update();  
+		requestAnimationFrame(render);
+		renderer.render(scene, camera);
+	}
+
+	init();
+
+	
+	
+	
+</script>
+</body>
+</html>

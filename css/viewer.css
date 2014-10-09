@@ -1,0 +1,23 @@
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+body, html {
+  height: 100%;
+}
+
+body {
+	margin-top: 40px;
+	overflow: hidden; 
+	min-width: 100%;
+	color: #ffffff;
+}
+
+#webgl {
+	width: 100%;
+}
+
+
+#content {
+	padding-left: 0px;
+	padding-right: 0px;
+}

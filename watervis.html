@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <title>Terrain Mapping</title>
+
+    <link href="css/leaflet.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/viewer.css" rel="stylesheet">	
+</head>
+<body>
+  
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/three.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/trackballControls.js"></script>
+    <script src="js/water-material.js"></script>
+    <script src="../JS/xyzload.js"></script>
+    <script src="../JS/world.js"></script>
+    <script src="../JS/ewkbloader.js"></script>
+    <script src="../JS/simpleTrack.js"></script>
+	
+	
+  
+  <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Terrain</a>
+        </div>
+      </div>
+    </div>
+	
+		<div id="content">
+			<div id="webgl"></div>
+		</div>
+
+      
+<script>
+	
+
+	$(window).resize(function () {
+		var h = $(window).height(), offsetTop = $('#navbar').height();
+		$('#content').css('height', h-offsetTop+3);
+		$('#webgl').css('height', h-offsetTop+3);
+		$('body').css('height', h-offsetTop+3);
+		
+	}).resize();
+	
+	
+	
+	function getUrlVars() {
+		var vars = {};
+		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+		});
+		return vars;
+	}
+	
+	var outline = getUrlVars()["outline"];
+	var table = getUrlVars()["table"];
+	
+    var width  = $('#content').width(),
+        height = $('#content').height();
+	
+	
+	
+	var water;
+	var aMeshMirror;
+	var waterNormals;
+	
+	var geometry, plane, material;
+	var camera;
+	var scene;
+	var controls;
+	var directionalLight;
+	
+	function init() {
+		camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 60000);
+		camera.position.set(0, -30, 30);	
+
+		controls = new THREE.TrackballControls(camera); 
+		renderer = new THREE.WebGLRenderer( { antialias: true } );
+		renderer.setSize(width, height);
+		renderer.setClearColor( 0xffffff, 1);
+
+		scene = new THREE.Scene();
+		scene.add(new THREE.AmbientLight(0x222222));
+		
+		directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+		directionalLight.position.set(-600, 300, 600);
+		scene.add(directionalLight);
+		
+		material = new THREE.MeshBasicMaterial();
+		
+		document.getElementById('webgl').appendChild(renderer.domElement);
+		render();
+	}
+		
+
+	var rows = 0;
+	var cols = 0;
+	var count = 0;
+	
+	var delim = "\n";
+	var postdelim = '\\\\012';
+	var worldRef;
+	var minX, minZ, minY;
+	var dem=new XMLHttpRequest();
+	dem.open("GET", '../data/rasters/rasterdata/?format=xyz&outline='+outline+'&table='+table, true);
+	//dem.open("GET", '../data/rasters/rasterdataRaw/?format=xyz&table=sunnfjordterrain', true);
+	//dem.open('GET','result.xyz');
+	dem.onreadystatechange = function() {
+		if(dem.readyState==4){
+			var geometry = new THREE.Geometry();
+			worldRef = new WorldReference();
+			console.log(worldRef);
+			loader.loadData(dem.responseText,geometry,-999,delim,worldRef);
+			addWater(geometry);
+		}
+		
+			
+	}
+	dem.send();
+	
+	function addWater(wgeometry) {
+		
+		// Load textures		
+		waterNormals = new THREE.ImageUtils.loadTexture('assets/img/waternormals.jpg');
+		waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping; 
+		
+		// Create the water effect
+		water = new THREE.Water(renderer, window.camera, window.scene, {
+			textureWidth: 512, 
+			textureHeight: 512,
+			waterNormals: waterNormals,
+			alpha: 	0.9,
+			sunDirection: window.directionalLight.position.normalize(),
+			sunColor: 0xffffff,
+			waterColor: 0x001e0f,
+			distortionScale: 50.0
+		});
+		
+		aMeshMirror = new THREE.Mesh(
+			wgeometry, 
+			water.material
+		);
+		aMeshMirror.add(water);
+		aMeshMirror.rotation.x = - Math.PI * 0.5;
+		scene.add(aMeshMirror);
+	}
+	
+	
+	
+	
+	
+  function render() {
+    controls.update();  
+	if (water) {
+		water.material.uniforms.time.value += 1.0 / 60.0;
+		water.render();
+	}
+    requestAnimationFrame(render);
+    renderer.render(scene, camera);
+  }
+	init();
+	
+	
+	
+</script>
+</body>
+</html>
