@@ -16,7 +16,7 @@
     <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
 	<script src="/assets/lib/three/three.js"></script>
     <script src="/assets/lib/leaflet/leaflet.js"></script>
-    <script src="/assets/lib/three/extensions/trackballControls.js"></script>
+    <script src="/assets/lib/three/extensions/TrackballControls.js"></script>
     <script src="/assets/lib/three/extensions/water-material.js"></script>
 	
     <script src="/assets/common/threeExtras/world.js"></script>	
@@ -57,12 +57,12 @@
 	
 	function getUrlVars() {
 		var vars = {};
+		console.log(window.location.href);
 		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
 			vars[key] = value;
 		});
 		return vars;
 	}
-	
 	var outline = getUrlVars()["outline"];
 	var table = getUrlVars()["table"];
 	
@@ -104,12 +104,10 @@
 	console.log(worldReference);
 	var xyzRequest = new XMLHttpRequest();
 	
-	xyzRequest.open("GET", '../data/rasters/rasterdata/?format=xyz&outline='+outline+'&table='+table, true);
+	xyzRequest.open("GET", '/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
 	xyzRequest.onreadystatechange = function() {
 		if(xyzRequest.readyState==4){
-			
-			
-			
+						
 			var material = new THREE.MeshLambertMaterial({  color: 0xefefef, shading: THREE.SmoothShading})
 			
 			terrainGeometry = xyzLoader.loadData(xyzRequest.responseText,worldReference);

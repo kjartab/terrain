@@ -24,7 +24,7 @@
     <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="/assets/lib/leaflet/leaflet.js"></script>
 	<script src="/assets/lib/leaflet/extensions/leaflet.draw.js"></script>
-    <script src="/assets/common/mapApps/cloudy.js"></script>
+    <script src="js/cloudy.js"></script>
   
     <div class="navbar navbar-default navbar-fixed-top" id="navbar">
 		<div class="container">
@@ -49,7 +49,7 @@
 		$('body').css('height', h);
 	}).resize();
 	
-	cloudy = new Cloud('map', 'vis.html');
+	cloudy = new Cloud('map', 'visualize.html');
 
 	function getCloud() {
 		return cloudy;
@@ -85,7 +85,7 @@
 
 	
 		
-		$.getJSON('data/rasteroverview', function (data) {
+		$.getJSON('/datapi/rasters/rasteroutline', function (data) {
 			
 			console.log(data);
 			for (i=0; i<data.length; i++) {					
@@ -93,11 +93,7 @@
 			}
 		});
 			
-		
-		$.getJSON('http://localhost:8080/geoserver/usa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=usa%3Astates&maxfeatures=50&outputformat=application%2Fjson', function (data) {
-			geojson.addData(JSON.parse(data));
-			
-		});
+
 			
 	</script>
 

@@ -18,6 +18,7 @@ function Cloud(mapdivelement) {
 	map.addControl(drawControl);
 	
 	map.on('draw:created', function (e) {
+		console.log('get');
 		var type = e.layerType,
 			layer = e.layer;
 
@@ -26,7 +27,8 @@ function Cloud(mapdivelement) {
 		}
 		
 		if (type === 'rectangle' || type === 'polygon') {
-			getCloud().startViewer(getCloud().toWKT(e.layer),'sunnfjordterrain');
+				console.log('getting viewer');
+			getCloud().startViewer(getCloud().toWKT(e.layer),'dtm.norge33');
 		}
 		
 		if (type === 'circle') {
@@ -155,7 +157,8 @@ function Cloud(mapdivelement) {
 	
 	Cloud.prototype.startViewer = function(outline, table) {
 		if(outline != null) {
-			open("vis.html?outline="+outline+"&table="+table);
+			
+			open("visualize.html?outline="+outline+"&table="+table);
 		} else {
 			window.alert("No point cloud selected");
 		}
