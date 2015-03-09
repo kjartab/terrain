@@ -7,25 +7,27 @@
 
     <title>Terrain Mapping</title>
 
-    <link href="css/leaflet.css" rel="stylesheet">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="scripts/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/viewer.css" rel="stylesheet">	
 </head>
 <body>	
-	<script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
-    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
-	<script src="/assets/lib/three/three.js"></script>
-    <script src="/assets/lib/leaflet/leaflet.js"></script>
+
+	<script src="scripts/lib/threejs/build/three.min.js"></script>
+    
+    <script src="scripts/lib/jquery/dist/jquery.min.js"></script>
+    <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
+    
+    
     <script src="/assets/lib/three/extensions/TrackballControls.js"></script>
     <script src="/assets/lib/three/extensions/water-material.js"></script>
 	
     <script src="/assets/common/threeExtras/world.js"></script>	
     <script src="/assets/common/threeExtras/simpleTrack.js"></script>
 	
-	
     <script src="/assets/common/loaders/simpleXYZload.js"></script>
     <script src="/assets/common/loaders/WKBloader.js"></script>
-    <script src="js/FileSaver.js"></script>
+    <script src="scripts/dist/FileSaver.js"></script>
 	
 	
   
@@ -139,72 +141,7 @@
 
 		};
 
-
-	
-	
-	/**
-	 * @author mrdoob / http://mrdoob.com/
-	 */
-	 
-	function exporter(geometry) {
-
-
-
-		var output = '';
-
-		for ( var i = 0, l = geometry.vertices.length; i < l; i ++ ) {
-
-			var vertex = geometry.vertices[ i ];
-			output += 'v ' + vertex.x + ' ' + vertex.y + ' ' + vertex.z + '\n';
-
-		}
-
-		// uvs
-
-		for ( var i = 0, l = geometry.faceVertexUvs[ 0 ].length; i < l; i ++ ) {
-
-			var vertexUvs = geometry.faceVertexUvs[ 0 ][ i ];
-
-			for ( var j = 0; j < vertexUvs.length; j ++ ) {
-
-				var uv = vertexUvs[ j ];
-				output += 'vt ' + uv.x + ' ' + uv.y + '\n';
-
-			}
-
-		}
-
-		// normals
-
-		for ( var i = 0, l = geometry.faces.length; i < l; i ++ ) {
-
-			var normals = geometry.faces[ i ].vertexNormals;
-
-			for ( var j = 0; j < normals.length; j ++ ) {
-
-				var normal = normals[ j ];
-				output += 'vn ' + normal.x + ' ' + normal.y + ' ' + normal.z + '\n';
-
-			}
-
-		}
-
-		// faces
-
-		for ( var i = 0, j = 1, l = geometry.faces.length; i < l; i ++, j += 3 ) {
-
-			var face = geometry.faces[ i ];
-
-			output += 'f ';
-			output += ( face.a + 1 ) + '/' + ( j ) + '/' + ( j ) + ' ';
-			output += ( face.b + 1 ) + '/' + ( j + 1 ) + '/' + ( j + 1 ) + ' ';
-			output += ( face.c + 1 ) + '/' + ( j + 2 ) + '/' + ( j + 2 ) + '\n';
-
-		}
-
-		return output;
-	}
-
+    
 	function init() {
 		camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 60000);
 		camera.position.set(0, -420, 320);	
@@ -224,16 +161,18 @@
 		document.getElementById('webgl').appendChild(renderer.domElement);
 		render();
 	}
+    
 	function export_text( text ) {
 		var content = "data:application/plain;charset=utf-8," + escape( text );
 		window.open( content, '_blank' );
 	}
 
 	worldReference.init(1/100,32632);
-	console.log(worldReference);
+    
 	var xyzRequest = new XMLHttpRequest();
 	
 	xyzRequest.open("GET", '/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
+    
 	xyzRequest.onreadystatechange = function() {
 		if(xyzRequest.readyState==4){
 			
@@ -249,14 +188,15 @@
 				$('.spinner').hide();
 			});
 			
-			var blob = new Blob([parseSTL(terrainGeometry)], {type: "text/plain;charset=utf-8"});
-			saveAs(blob, "hello world.obj");
-
-		
-			
+			saveSTL();
 		}
 		
 	}
+    
+    function saveSTL() {
+        var blob = new Blob([parseSTL(terrainGeometry)], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, "hello world.stl");
+    }
 	
 	
 	xyzRequest.send();
