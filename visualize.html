@@ -16,17 +16,11 @@
     
     <script src="scripts/lib/jquery/dist/jquery.min.js"></script>
     <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
-    
-    
     <script src="/assets/lib/three/extensions/TrackballControls.js"></script>
-    <script src="/assets/lib/three/extensions/water-material.js"></script>
 	
     <script src="/assets/common/threeExtras/world.js"></script>	
-    <script src="/assets/common/threeExtras/simpleTrack.js"></script>
 	
     <script src="/assets/common/loaders/simpleXYZload.js"></script>
-    <script src="/assets/common/loaders/WKBloader.js"></script>
     <script src="scripts/dist/FileSaver.js"></script>
 	
 	
@@ -171,7 +165,7 @@
     
 	var xyzRequest = new XMLHttpRequest();
 	
-	xyzRequest.open("GET", '/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
+	xyzRequest.open("GET", 'http://www.kartan.no/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
     
 	xyzRequest.onreadystatechange = function() {
 		if(xyzRequest.readyState==4){
