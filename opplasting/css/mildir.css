@@ -1,0 +1,172 @@
+#top {
+	background-color: #D0D0D0;
+	color: #008283
+
+}
+
+.navbar a {
+	
+	
+	color: rgba(15, 125, 124);
+}
+
+.navbar:hover {
+	
+	
+	
+	color: rgba(15, 125, 124);
+}
+
+.row {
+	padding-top: 100px;
+}
+
+.fill { 
+    min-height: 50%;
+    height: 50%;
+}
+
+.bruker {
+
+    height: 100%;
+    min-height: 100%;
+}
+
+#mdul-logo {
+	padding: 0;
+	padding-right: 20px;
+	margin: 0;
+}	
+
+.navbar-brand img {
+	height: 100%;
+}
+
+#sletting {
+	display: none;
+}
+
+#opplasting {
+	display: none;
+}
+
+/* Library Generated Form Element Containers */
+
+.fmes-form-component{
+	clear:left;
+	float:left;
+	display:block;
+	width:100%;
+	margin:4px 0px;
+}
+
+.fmes-form-component input, .fmes-form-component select {
+	float: right;
+}
+
+
+
+
+
+
+#drop {
+	display: none;
+}
+
+
+
+#filebox{
+    height:  100%;
+    padding: 0;
+    margin: 0;
+	padding-bottom: 10px;
+	padding-top: 10px;
+
+}
+/* Drag and Drop Elements */
+
+.drop{
+
+	width:100%;
+	display:block;
+	cursor: pointer;
+	margin:20px 0px 0px;
+	padding:20px 0px;
+	border:1px solid #CCC;
+	background-color:#DFDFDF;
+	color:#444;
+	text-align:center;
+	position:relative;
+}
+
+.drop-file{
+	opacity:0;
+	filter:alpha(opacity=0);
+	position:absolute;
+	z-index:100;
+	top:0;
+	left:0;
+	margin:0;
+}
+
+#drop{
+	cursor:default !important;
+}
+
+#drop:hover{
+
+	background-color:#EEE;
+	color:#555;
+}
+
+
+/* Big action buttons for import and slett, and body to go with it */
+
+.action-body {
+width: 85%;
+	display:none;
+}
+
+.mdul-big-action-button {
+	cursor: pointer;
+	width: 85%;
+	height: auto;
+	background-color: rgba(15, 125, 124, 0.85);
+	padding: 2px;
+	padding-left: 20%;
+	padding-right: 10%;
+}
+
+
+.mdul-big-action-button:hover {
+	width: 85%;
+	height: auto;
+	background-color: rgba(15, 125, 124, 0.65);
+	padding: 2px;
+	padding-left: 20%;
+	padding-right: 10%;
+}
+
+
+
+.mdul-big-action-button-active {
+	cursor: pointer;
+	width: 85%;
+	min-height: px; 
+	height: auto;
+	background-color: rgba(15, 125, 124, 0.85);
+	padding: 2px;
+	padding-left: 20%;
+	padding-right: 10%;
+}
+
+
+.mdul-big-action-button-active:hover {
+	width: 85%;
+	
+	height: auto;
+	background-color: rgba(15, 125, 124, 0.65);
+	padding: 2px;
+	padding-left: 20%;
+	padding-right: 10%;
+}

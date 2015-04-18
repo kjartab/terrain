@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+<!-- Meta, title, CSS, favicons, etc. -->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Kjartan Bjørset">
+
+
+<link href="bootstrap3/css/bootstrap.min.css" rel="stylesheet">
+<link href="css/mildir.css" rel="stylesheet">
+
+
+
+<title>
+	Miljødirektoratet
+</title>
+</head>
+
+<body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="bootstrap3/js/bootstrap.min.js"></script>
+<script src="FME-Server-Javascript-API/v1.1/FMEServer.js"></script>
+
+
+	<!-- Navigational bar -->
+	<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+	  <div class="container">
+		<div class="navbar-header">
+		  <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		   <a class="navbar-brand" rel="home" href="#" id="mdul-logo">
+				<img src="mdlogocut.jpeg">
+			</a>
+		  <a href="../" class="navbar-brand">Miljødirektoratet Opplasting</a>
+		</div>
+		<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+		  <ul class="nav navbar-nav">
+					
+		  </ul>
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="#mdul-loginModal" data-toggle="modal" >Get Token</a></li<
+		  </ul>
+		</nav>
+	  </div>
+	</header>
+	
+	<button type="button" class="navbar-toggle" data-toggle="collapse" 
+            data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+ 
+ 
+ <!-- Bruker -->
+ <div class="container bruker-row"> 
+	<div class = "row ">
+			
+			<h1>Velg bruker</h1>
+			
+			<hr>
+		<div class = "col-lg-6 bruker">
+				
+		<p>Velg din bruker hos Miljødirektoratet i nedtrekksmenyen:</p>
+		
+		
+		</div>
+		
+		<div class = "col-lg-6 bruker fill">
+				<div id ="mdul-userload"></div>
+				<select id="userdropdown"></select>
+		</div>
+		
+	</div>
+</div>
+	
+
+ <!--  -->
+	<div class="container valg-row"> 
+		<div class="row">
+
+			<h1>Hva vil du gjøre?</h1>
+			<hr>
+				
+			<div class ="col-lg-6">
+
+				<div class="mdul-big-action-button" id="mdul-import">
+					<h1>Importere data</h1>
+				</div>
+				
+				<div class="action-body" id="mdul-import-body">
+					<div id="mdul-import-filedrop" class="drop">
+						<h1>Klikk eller dra inn fil</h1>
+						<input type="file" id="mdul-import-fileinput"></input>
+					</div>
+					<div id="mdul-import-output-form"></div>
+					<button onclick="runImport()">Last opp</button>
+				</div>
+				
+			</div>
+
+	 
+			<div class ="col-lg-6">
+				<div class="mdul-big-action-button"  id="mdul-slette">
+					<h1>Slette data</h1>
+				</div>
+				<div class="action-body" id="mdul-slette-body">
+					
+					<div id="mdul-slette-filedrop" class="drop">
+						<h1>Klikk eller dra inn fil</h1>
+						<input type="file" id="mdul-slette-fileinput"></input>
+					</div>
+					<form id="mdul-slette-form">
+						
+							
+							
+						
+					</form>
+					
+					
+				
+					<div id="mdul-slette-output-form"></div>
+					<button onclick="runSlette()">Last opp</button>
+				
+				</div>
+				
+				
+			</div>
+ 
+		</div>
+	</div>
+	
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+<div class="modal" id="mdul-loginModal">
+	<div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Get Token</h4>
+        </div>
+         <div class="modal-body">
+                <!-- The form is placed inside the body of modal -->
+                                                         
+                <form id="loginForm" method="get" action="http://trdfme01.miljodirektoratet.no/fmetoken/generate" class="form-horizontal" target="_blank">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Username</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name="user" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Password</label>
+                        <div class="col-sm-5">
+                            <input type="password" class="form-control" name="password" />
+                        </div>
+                    </div>
+					 <button type="submit" class="btn btn-default">Login</button>
+                </form>
+				
+            </div>
+        <div class="modal-footer">
+         
+        </div>
+      </div>
+    </div>
+	
+</div>
+ <script>
+	
+	
+		function getFiles() {
+			// Ask FME Server for the list of uploaded files
+			FMEServer.getDataUploads( repository,'Slett_data_fra_naturbase.fmw', sessionid, function (){console.log('test');}			);
+		}
+		
+	var repository = 'Naturbase_import_testdatabase';
+	
+	var sletteWorkspace = 'Slett_data_fra_naturbase.fmw';
+	var importWorkspace = 'DUMMY_NORKART_20130625_FMESERVER2013_DEL0_STARTUP.fmw';
+	var userWorkspace =  'brukere.fmw';
+	var leveranseidWorkspace =  'leveranseid.fmw';
+
+	
+	var fileInput;
+	var _currentUser;
+	var _currentLeveranseId;
+	var _userArray;
+	
+	var _importFil;
+	var _sletteFil;
+	
+	var loggedIn = false;
+	
+		
+	/**
+	*
+	*	Login prompt when loaded. 
+	*
+	**/
+	window.onload = function() {
+		$('#mdul-loginModal').modal('toggle');
+		//afterLogin();
+	};
+	
+	/**
+	*
+	*	After successful login, this function is executed
+	*
+	**/
+	function afterLogin() {
+		
+		FMEServer.init({
+			server : "http://trdfme01.miljodirektoratet.no",
+			token : token
+			//token : 'e0fe04ad2fb5a83b6712f08f4cb9a142aca09956'
+		});
+		loggedIn = true;
+		getUsers();
+		getLeveranser();
+		FMEServer.getSession( repository, userWorkspace, sessionCallback);
+			
+		setupFileInput(sletteWorkspace, 'mdul-slette-fileinput', fileChangeCallback);
+		setupFileInput(importWorkspace, 'mdul-import-fileinput', fileChangeCallback);
+	}
+	
+	
+	
+	function sessionCallback(data) {
+		sessionid = data.serviceResponse.session;
+	}
+	
+	
+	/**
+	*
+	*	--------------------- Setup DIVs for Slette and Import --------------------- 
+	*
+	**/
+	
+	$('#mdul-import').on('click', function(event) {
+		if ($('#mdul-import-body').is(":visible")) {
+			disableImport();					
+		} else {
+			if (loggedIn) {
+				enableImport();
+			} else {
+				alert('Du er ikke innlogget');
+			}
+		}
+	});
+	
+	$('#mdul-slette').on('click', function(event) {
+		if ($('#mdul-slette-body').is(':visible')) {
+			disableSlette();
+		} else {
+			if (loggedIn) {
+				enableSlette();
+			} else {
+				alert('Du er ikke innlogget');
+			}
+		}
+	});
+	
+	function enableImport() {
+		disableSlette();
+		$('#mdul-import-body').show({duration: 200});
+		$('#mdul-import').addClass('mdul-big-action-button-active');
+		FMEServer.getWorkspaceParameters( repository, importWorkspace, generateImportForm);
+	}
+	
+	function disableImport() {
+		$('#mdul-import-body').hide({duration: 200});
+		$('#mdul-import').removeClass('mdul-big-action-button-active');
+	}
+
+	function enableSlette() {
+		disableImport();
+		$('#mdul-slette-body').show({duration: 200});
+		FMEServer.getWorkspaceParameters( repository, sletteWorkspace, generateSletteForm);
+	}
+	
+	function disableSlette() {
+		$('#mdul-slette-body').hide({duration: 200});
+		$('#mdul-slette').removeClass('mdul-big-action-button-active');
+	}
+	
+	
+	function getWorkspaceUploads(workspace, callback) {
+		FMEServer.getDataUploads( repository, workspace, sessionid, callback);
+	}
+	
+	function runSlette() {
+		var fil = '$(FME_DATA_REPOSITORY)/Naturbase_import_testdatabase/Slett_data_fra_naturbase.fmw/' + sessionid +'/test1_ID.xlsx'
+		FMEServer.runDataDownload( repository, sletteWorkspace, 'opt_showresult=true&Bruker=terkro&Datasett=VV&Fil_med_liste='+fil+'&opt_responseformat=json&detail=high', callbacktest);		
+	}
+	
+	function runImport() {
+		var fil = '$(FME_DATA_REPOSITORY)/Naturbase_import_testdatabase/DUMMY_NORKART_20130625_FMESERVER2013_DEL0_STARTUP.fmw/' + sessionid +'/FORESLATTVERN_20141120.SOS'
+		FMEServer.runDataDownload( repository, importWorkspace, 'opt_showresult=true&Bruker=terkro&Datasett=VP&Terskelverdi=3000&SourceDataset_GDMMAPPERSOSI='+fil+'&opt_responseformat=json&detail=high', callbacktest);
+	}
+	
+	
+	function callbacktest(data) {
+		alert('Ferdig');
+		console.log(data);
+	}
+	
+
+	
+	/**
+	*
+	*	 --------------------- User section --------------------- 
+	*
+	**/
+
+	
+	/** 
+	*
+	*	Retrieves the users using a user-repository
+	*	@var workspace - a workspace which returns user objects
+	*
+	**/
+	function getUsers() {
+		FMEServer.runDataStreaming( repository, userWorkspace, null, updateUsers);
+	}
+	
+	
+	function updateUserInfo() {
+		$( "input[name='Bruker']" ).val(getUser(_currentUser).BrukerID);
+		$( "input[name='Email']" ).val(getUser(_currentUser).Epost);
+	}
+	
+		
+	function buildUserDropDown(dataArray) {
+		_userArray = dataArray;
+		var divString ='';
+		var temp;
+		for (var i=0; i<dataArray.length; i++) {
+			temp = dataArray[i];
+			if (i==0) {
+				_currentUser = temp.BrukerID;
+				divString +=  '<option selected=\"selected\" value=\"' + temp.BrukerID + '\">' + temp.Fornavn + ' ' + temp.Etternavn + '</option>';
+				
+			} else {
+				divString += '<option value=\"' + temp.BrukerID + '\">' + temp.Fornavn + ' ' + temp.Etternavn + '</option>';
+			}
+		}
+		return divString;
+	}
+	
+	function getUser(id) {
+		console.log(_userArray);
+		for (var i=0; i<_userArray.length; i++) {
+		
+			if (_userArray[i].BrukerID == id) {
+				return _userArray[i];
+			}
+		}
+	}
+	
+	
+	function updateUsers(data) {
+		$('#userdropdown').html(buildUserDropDown(data)).on( "change", handleSelectChange); 
+	}
+	
+	function handleSelectChange(event) {
+		_currentUser = event.currentTarget.value;		
+		updateUserInfo();
+		
+	}
+	
+	
+	
+	
+
+	/**
+	*
+	*	 --------------------- Leveranser --------------------- 
+	*
+	**/
+	
+	/** 
+	*
+	*	Retrieves the users using a user-repository
+	*	@var workspace - a workspace which returns user objects
+	*
+	**/
+	function getLeveranser() {
+		FMEServer.runDataStreaming( repository, leveranseidWorkspace, null, function (data) {console.log(data);});
+	}
+	
+			
+	function buildLeveranseDropDown(dataArray) {
+		var divString ='';
+		var temp;
+		for (var i=0; i<dataArray.length; i++) {
+			temp = dataArray[i];
+			if (i==0) {
+				divString +=  '<option selected=\"selected\" value=\"' + temp.ID + '\">' + temp.Leveransenavn + '</option>';
+				_currentUser = temp.BrukerID;
+			} else {
+				divString += '<option value=\"' + temp.ID + '\">' + temp.Leveransenavn + '</option>';
+			}
+		}
+		return divString;
+	}
+	
+	
+	
+	function updateLeveranse(data) {
+		$('#x-fastdropdown').html(buildUserDropDown(data)).on( "change", handleLeveranseSelectChange); 
+	}
+	
+	function handleLeveranseSelectChange(event) {
+		_currentLeveranseId = event.currentTarget.value;
+	}
+	
+	
+
+	
+	
+	/**
+	*
+	*	 --------------------- Generate forms --------------------- 
+	*
+	**/
+	
+
+	function generateSletteForm( json ) {
+		$('#mdul-slette-output-form').empty();
+		var form = document.getElementById( "mdul-slette-output-form" );
+
+		// Build the form items using the API
+		FMEServer.generateFormItems( "mdul-slette-output-form", json, updateUserInfo );
+	
+		// Create the Run Data Download Button
+		/*
+		var submitButton = document.createElement( "input" );
+		submitButton.type = "button";
+		submitButton.value = "Run Data Download";
+		submitButton.setAttribute( "onclick", "runDataDownload();" );
+		form.appendChild( submitButton );
+		*/
+		disableFormInput('Fil_med_liste');
+		disableFormInput('Bruker');
+		disableFormInput('Email');
+		console.log($("Fil_med_liste label"));
+		$("Fil_med_liste label").text('Fil');
+		
+	}
+	
+
+	function generateImportForm( json ) {
+		$('#mdul-import-output-form').empty();
+		var form = document.getElementById( "mdul-import-output-form" );
+
+		// Build the form items using the API
+		FMEServer.generateFormItems( "mdul-import-output-form", json, updateUserInfo );
+
+		// Create the Run Data Download Button
+		/*
+		var submitButton = document.createElement( "input" );
+		submitButton.type = "button";
+		submitButton.value = "Run Data Download";
+		submitButton.setAttribute( "onclick", "runDataDownload();" );
+		form.appendChild( submitButton );
+		*/
+		
+		disableFormInput('SourceDataset_GDMMAPPERSOSI');
+		disableFormInput('Bruker');
+		disableFormInput('Email');
+		
+	}
+	
+	
+	
+	/**
+	*
+	*	--------------------- Form Editing --------------------- 
+	*
+	**/
+	
+	function updateFormInput(name, value) {
+		 $('input[name="'+name+'"]' ).val(value);
+	}
+	
+	function disableFormInput(name) {
+		 $("input[name='"+name+"']" ).prop('disabled', true);
+	}
+	
+	function enableFormInput(name) {
+		 $("input[name='"+name+"']" ).prop('disabled', false);
+	}
+	
+	
+	
+	/**
+	*
+	* --------------------- FILE UPLOAD --------------------- 
+	*
+	**/
+	
+	
+	function sletteUploadCallback(data) {
+		console.log(data);
+		updateFormInput('Fil_med_liste', data.serviceResponse.files.file[0].name);
+		_sletteFil = data.serviceResponse.files.file[0].name;
+	}
+	
+	function importUploadCallback(data) {
+		console.log(data);
+		updateFormInput('SourceDataset_GDMMAPPERSOSI', data.serviceResponse.files.file[0].name);
+		_importFil = data.serviceResponse.files.file[0].name;
+	}
+	
+	function fileChangeCallback(workspace, fileInput) {
+		if(workspace == sletteWorkspace) {
+			FMEServer.dataUpload( repository, workspace, fileInput, sessionid, sletteUploadCallback );
+			
+		} else if (workspace == importWorkspace) {
+			FMEServer.dataUpload( repository, workspace, fileInput, sessionid, importUploadCallback );
+		}
+	}
+	
+	function setupFileInput(workspace, inputDiv, callback) {
+		var fileInput = document.getElementById(inputDiv);
+		console.log(fileInput);
+		var drop = document.createElement( "div" );
+		drop.id = "drop";
+		drop.setAttribute( "class", "drop" );
+		fileInput.setAttribute( "class", "drop drop-file" );
+		fileInput.id = "filebox";
+		fileInput.parentNode.insertBefore( drop, fileInput.nextSibling );
+		
+		// Custom Code for Internet Explorer
+		if( navigator.appName == 'Microsoft Internet Explorer' ) {
+			drop.innerHTML = "Drop File Here, or Double Click to Select";
+			window.addEventListener( "drop", function( event ) {
+				event.stopPropagation();
+				event.preventDefault();
+			}, false );
+			window.addEventListener( "dragover", function( event ) {
+				event.stopPropagation();
+				event.preventDefault();
+			}, false );
+			fileInput.addEventListener( "drop", function( event ) {
+				if( event.dataTransfer.files !== undefined ) {
+					fileInput = {
+						files : event.dataTransfer.files
+					};
+					callback(workspace, fileInput);
+					
+				}
+			}, false );
+		} else { // All modern browsers
+			drop.innerHTML = "Drop File Here, or Click to Select File";
+			// Add the on "drop" handler
+				fileInput.onchange = function() {
+				callback(workspace, fileInput);
+				
+			};
+		}
+	}
+	
+	
+	
+	var loginForm = $('#loginForm');
+    loginForm.submit(function (ev) {
+        $.ajax({
+            type: loginForm.attr('method'),
+            url: loginForm.attr('action'),
+            data: loginForm.serialize(),
+            success: function (data) {
+				token = data;
+				
+				$('#mdul-loginModal').modal('toggle');
+				loggedIn = true;
+				afterLogin();
+            },
+			error: function(data) {
+				
+				$('#mdul-loginModal').modal('toggle');
+				alert('Feil brukernavn eller passord');
+			}
+			
+        });
+
+        ev.preventDefault();
+    });
+	
+	
+		
+</script>
+ 
+
+ 
+  
+ 
+ 
+ 
+ 
+
+
+
+ </body>
+ 
+ </html>
+ 
+ 

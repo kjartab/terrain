@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+
+    <title>Langeland</title>
+
+    <link href="/assets/lib/leaflet/leaflet.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+
+  </head>
+<body>
+
+    <script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
+    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/lib/leaflet/leaflet.js"></script>
+	<script src="/assets/lib/three/three.js"></script>
+    <script src="/assets/lib/three/extensions/trackballControls.js"></script>
+    <script src="/assets/lib/three/extensions/OrbitControls.js"></script>
+
+    <script src="/assets/common/mapApps/langelandthree.js"></script>
+    <script src="/assets/common/loaders/simpleXYZload.js"></script>
+    <script src="/assets/common/loaders/WKTloader.js"></script>
+    <script src="/assets/common/threeExtras/simpleTrack.js"></script>
+    <script src="/assets/common/threeExtras/world.js"></script>
+	<script src="/assets/common/threeExtras/GeometryBuilder.js"></script>
+
+	
+	<!-- The navigation bar -->
+	
+	<div class="navbar-default navbar-fixed-top" id="navbar">
+
+		<div class="navbar-header col-lg-2">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Langeland Skisenter</a>
+		</div>
+			<div class="navbar-collapse collapse col-lg-10">
+				<ul class="nav navbar-nav">
+
+					<li><a href="#home">HEIM</a></li>
+					<li><a href="#tracks">LØYPER</a></li>
+					<li><a href="#weather">VER</a></li>
+					<li><a href="#camera">KAMERA</a></li>
+					<li><a href="#sponsor">SPONSOR</a></li>
+					<li><a href="#contact">KONTAKT</a></li>
+
+				</ul>
+				
+
+			</div>	<!--/.nav-collapse -->
+		
+	</div>
+
+	
+		<div id="map"></div>
+
+
+
+
+  <script>  
+	$(window).ready(function() {
+		var contentwidth = $('#heim').width();
+		if ((contentwidth) < 720){
+			$('.fullscreen-img').css('background', 'color: #444444');
+		} else if ((contentwidth) < 996){
+			$('.fullscreen-img').css('background', 'url(img/bglang-996.jpg)');
+		}
+	});
+	$(window).resize(function () {
+		var h = $(window).height(),
+			offsetTop = 55; // Calculate the top offset
+		var top = $("#top").height();
+		$("#map").css('height', $(window).height()-offsetTop);
+	}).resize();
+	
+    var width  = $('#content').width(),
+        height = $('#content').height();
+	
+	
+	worldReference.init(1/100, 32632);
+	
+	langelandThree.init('map',worldReference);
+	langelandThree.loadTerrain();
+	
+	
+	
+	
+	
+</script>
+
+
+</body>
+</html>

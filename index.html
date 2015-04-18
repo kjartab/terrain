@@ -24,7 +24,6 @@
     <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
 	<script src="scripts/lib/leaflet-draw/dist/leaflet.draw.js"></script>
-    <script src="scripts/dist/cloudy.js"></script>
   
     <div class="navbar navbar-default navbar-fixed-top" id="navbar">
 		<div class="container">
@@ -38,6 +37,23 @@
 	<div class="col-lg-12" id="innhald">
 		<div id="map"></div>
 	</div>
+    <div style="display:none">
+        <div>
+           <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+            Dropdown
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+          </ul>
+            
+        
+        </div>
+    </div>
+    
 	
 </div>
    
@@ -49,50 +65,124 @@
 		$('body').css('height', h);
 	}).resize();
 	
-	cloudy = new Cloud('map', 'visualize.html');
+    
+    
+	var map = L.map('map').setView([56.9648487562327, 1.8675290264099], 8);
+    
+    //	map.addLayer(L.tileLayer.wms("http://opencache.statkart.no/gatekeeper/gk/gk.open?",{layers: 'topo2graatone', format: 'image/png'},{attribution:''}));
+    L.tileLayer('http://www.webatlas.no/maptiles/tiles/webatlas-standard-vektor/wa_grid/{z}/{x}/{y}.png', {
+        maxZoom: 30,
+        zIndex: 0
+    }).addTo(map);
+
+    
+    
+	var drawnItems = new L.FeatureGroup();
+	map.addLayer(drawnItems);
+	
+	drawControl = new L.Control.Draw({
+			edit: { featureGroup: drawnItems },
+			position: 'bottomleft'
+		});
+	map.addControl(drawControl);
+    
+    
+	map.on('draw:created', function (e) {
+		var type = e.layerType,
+			layer = e.layer;
+		
+		if (type === 'rectangle' || type === 'polygon') {
+				console.log('getting viewer');
+			startViewer(layerToWKT(e.layer),'dtm.norge33');
+		}
+		
+		map.addLayer(layer);
+	});
+    
+    
+    function handleAreaSelect(polygon) {
+        
+        
+    }
+    
+    
+	//cloudy = new Cloud('map', 'visualize.html');
 
 	function getCloud() {
 		return cloudy;
 	}
 	
-			function style(feature) {
-			switch(feature.geometry.type) {
-				case 'Polygon':
-					return {	
-						fillColor: "#2233dd",
-						weight: 1,
-						opacity: 1,
-						color: "#2233dd",
-						fillOpacity: 0.3
-					};
-				break;
-				
-				case 'Point':
-					return {
-						fillColor: "#2233dd",
-						weight: 1,
-						opacity: 0.8,
-						color: "#2233dd",
-						fillOpacity: 0.9
-					};
-				break;
-			}
-		}
-		
-		function onEachFeature(feature, layer) {
+    function style(feature) {
+        switch(feature.geometry.type) {
+            case 'Polygon':
+                return {	
+                    fillColor: "#2233dd",
+                    weight: 1,
+                    opacity: 1,
+                    color: "#2233dd",
+                    fillOpacity: 0.3
+                };
+            break;
             
-		}
-
-	
-		$.getJSON('http://www.kartan.no/datapi/rasters/rastergrid', function (data) {
+            case 'Point':
+                return {
+                    fillColor: "#2233dd",
+                    weight: 1,
+                    opacity: 0.8,
+                    color: "#2233dd",
+                    fillOpacity: 0.9
+                };
+            break;
+        }
+    }
+        
+    
+	var geojson = L.geoJson(null,{ style : style}).addTo(map);
+        
+		$.getJSON('http://10.0.0.249/datapi/rasters/rastergrid', function (data) {
 			
-			console.log(data);
-			for (i=0; i<data.length; i++) {					
-				geojson.addData(JSON.parse(data[i][0]), {onEachFeature: onEachFeature, style : style});
+			for (i=0; i<data.length; i++) {		    			
+				geojson.addData(JSON.parse(data[i][0]), {style : style});
 			}
 		});
+        
+        
+        
+        
+	
+    function startViewer(outline, table) {
+		if(outline != null) {
 			
+			open("visualize.html?outline="+outline+"&table="+table);
+		} else {
+			window.alert("No point cloud selected");
+		}
+	}
 
+    function layerToWKT(layer) {
+		var lng, lat, coords = [];
+		
+		if (layer instanceof L.Polygon || layer instanceof L.Polyline ) {
+			var latlngs = layer.getLatLngs();
+			for (var i = 0; i < latlngs.length; i++) {
+				latlngs[i]
+				coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+				if (i === 0) {
+					lng = latlngs[i].lng;
+					lat = latlngs[i].lat;
+				}
+			};
+			if (layer instanceof L.Polygon) {
+				return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
+			} else if (layer instanceof L.Polyline) {
+				return "LINESTRING(" + coords.join(",") + ")";
+			}
+		} else if (layer instanceof L.Circle) {
+			return "ST_MakePoint(" + layer.getLatLng().lng + "," + layer.getLatLng().lat + ")";
+		} else if (layer instanceof L.Marker) {
+			return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
+		}
+	}
 			
 	</script>
 

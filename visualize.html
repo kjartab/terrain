@@ -27,11 +27,10 @@
   
   <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top" id="navbar">
-      <div class="container">
+
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Terrain</a>
+          <a class="navbar-brand" href="#"></a>
         </div>
-      </div>	
     </div>
 	
 		<div id="content">
@@ -165,7 +164,7 @@
     
 	var xyzRequest = new XMLHttpRequest();
 	
-	xyzRequest.open("GET", 'http://www.kartan.no/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
+	xyzRequest.open("GET", 'http://10.0.0.249/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
     
 	xyzRequest.onreadystatechange = function() {
 		if(xyzRequest.readyState==4){

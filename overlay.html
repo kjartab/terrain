@@ -1,0 +1,245 @@
+	<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+
+    <title>Terrain</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="scripts/lib/leaflet/dist/leaflet.css" rel="stylesheet">
+    <link href="scripts/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/overlay.css" rel="stylesheet">
+	<link href="scripts/lib/leaflet-draw/dist/leaflet.draw.css" rel="stylesheet" />
+	<link href="scripts/lib/ol3/v3.3.0/css/ol.css" rel="stylesheet" />
+	
+</head>
+  
+<body>
+  
+    <script src="scripts/lib/jquery/dist/jquery.min.js"></script>
+    <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
+	<script src="scripts/lib/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="scripts/dist/cloudy.js"></script>
+    <script src="scripts/lib/threejs/build/three.min.js"></script>
+    <script src="scripts/lib/ol3/v3.3.0/build/ol.js"></script>
+    <script src="scripts/lib/ol3/v3.3.0/resources/example-behaviour.js"></script>
+    
+    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
+		<div class="container">
+			<div class="navbar-header">
+			<a class="navbar-brand" href="#">Terrain</a>
+			</div>
+		</div>
+    </div>
+    
+    <div class="wrapper">
+        <div class="col-lg-12" id="innhald">
+            <div id="map"></div>
+            <div id="overlay"></div>
+        </div>
+      </div>
+
+    </div>
+   
+        <div id="output">
+            
+        </div>
+	<script>
+    
+        
+
+            // Creates an overlays in the given coordinates
+            function createCircleOutOverlay(position) {
+                var elem = document.createElement('div');
+                elem.setAttribute('class', 'circleOut');
+
+                return new ol.Overlay({
+                    element: elem,
+                    position: position,
+                    positioning: 'center-center'
+                });
+            }
+
+            
+            
+    var projection = new ol.proj.Projection({
+      code: 'EPSG:25833',
+      // The extent is used to determine zoom level 0. Recommended values for a
+      // projection's validity extent can be found at http://epsg.io/.
+      extent: [-150000, 5027916,4640000, 9051551],
+      units: 'm'
+    });
+    ol.proj.addProjection(projection);
+    
+    
+    var map = new ol.Map({
+            
+        layers: [new ol.layer.Tile({
+            source: new ol.source.TileWMS(/** @type {olx.source.TileWMSOptions} */ ({
+              url:  "https://www.webatlas.no/wms-std-demo/",    
+              params: {'LAYERS': 'Kart', 'TILED': true},
+              extent: [-150000, 5027916,4640000, 9051551],
+              serverType: 'geoserver'
+            }))
+          })
+        ],
+        controls: ol.control.defaults({
+        attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+            collapsible: false
+        })
+        }),
+        
+        renderer: exampleNS.getRendererFromQueryString(),
+        target: 'map',
+        view: new ol.View({ 
+            projection: 'EPSG:25833',
+            center: [0, 0],
+            zoom: 2
+        })
+    });
+    
+    
+    
+    map.getView().setCenter([270444, 7041940]);
+    map.getView().setZoom(20);
+    map.on('change:view', function(e) {
+    console.log(e);
+    });
+    
+    var res =  map.getView().getResolution();
+    
+    function onMoveEnd(e) {
+    
+        var dres = res - map.getView().getResolution();
+        res = map.getView().getResolution();
+        
+        var oldCenter = e.oldValue;
+        var center =  map.getView().getCenter();
+        
+        camera.position.z += -dres*500;
+        
+        dx = center[0] - oldCenter[0];
+        dy = center[1] - oldCenter[1];
+        
+        moveCenter((center[0]-oldCenter[0]), (center[1]-oldCenter[1]), res, dres);
+        
+        $('#output').empty();
+        $('#output')
+            .append('<p>dx: ' + dx + '</p>')
+            .append('<p>dy:  ' + dy + '</p>')
+            .append('<p>resolution:  ' + res + '</p>')
+            .append('<p>z-height:  ' + camera.position.z + '</p>');
+        //moveCenter();
+        //console.log(e);
+    }
+    
+    
+        
+//map.on('moveend', onMoveEnd);
+        
+map.getView().on('change:center', onMoveEnd);
+    
+        
+//map.on('change:view', onMoveEnd);
+        
+        
+    
+    var coordinates, overlay;
+        coordinates = [270444, 7041940];
+        overlay = createCircleOutOverlay(coordinates);
+        map.addOverlay(overlay);
+    
+            
+            
+    // THREEJS
+    
+    
+			var camera, scene, renderer;
+			var mesh;
+
+			init();
+			animate();
+            
+            function moveCenter(dx, dy, resolution, dres) {
+            /*
+                camera.position.x += -dx*42;
+                camera.position.y += -dy*42;
+                console.log('tt');
+                console.log(camera.position.x);
+                
+                mesh.position.x += dx;
+                mesh.position.y += dy;
+                */
+                
+                mesh.position.x += -0.75*dx;
+                mesh.position.y += -0.75*dy;
+                
+                //camera.position.x += dx;
+                //camera.position.y += dy;
+            }
+			function init() {
+
+				renderer = new THREE.WebGLRenderer({ alpha: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, 600 );
+                
+                renderer.setClearColor( 0x000000, 0 ); 
+				document.body.appendChild( renderer.domElement );
+                
+                
+				//
+                var el = document.getElementById('overlay')
+                document.getElementById('overlay').appendChild(renderer.domElement);
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / 600, 1, 1000000 );
+				camera.position.z = 4;
+
+				scene = new THREE.Scene();
+
+				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+
+				var texture = THREE.ImageUtils.loadTexture( 'images/crate.gif' );
+				texture.anisotropy = renderer.getMaxAnisotropy();
+
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+				//
+                mesh.position.x=0;
+                mesh.position.y=0;
+                mesh.position.z=-10;
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				mesh.rotation.x += 0.005;
+				mesh.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+
+			}
+	</script>
+
+</body>
+</html>

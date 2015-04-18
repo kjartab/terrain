@@ -1,0 +1,111 @@
+body{ 
+	font-family:Helvetica,Arial,sans-serif;
+	font-size:14px;
+}
+
+input, select, textarea{
+	margin:5px;
+	vertical-align:middle;
+}
+
+input[type=text]{
+	width:200px;
+}
+
+textarea{ 
+	min-width:300px;
+	min-height:150px;
+}
+
+label{
+	display:inline;
+	vertical-align:middle;
+}
+
+hr{
+	clear:both;
+	margin:10px 0px;
+}
+
+#mapDiv{ 
+	width:100%;
+	height:480px;
+	margin:10px 0px;
+	position:relative;
+}
+
+#loadingImg{
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	z-index:10002;
+}
+
+.leaflet-clickable{
+	cursor:pointer;
+}
+
+.olLayerDiv image, .olLayerDiv polyline{
+	cursor:pointer;
+}
+
+#mapDiv_gc image, #mapDiv_gc path{
+	cursor:pointer;
+}
+
+.topic{
+	padding:5px;
+	margin:2px;
+	border:1px solid #EEE;
+	float:left;
+}
+
+/* Library Generated Form Element Containers */
+
+.fmes-form-component{
+	clear:left;
+	float:left;
+	display:block;
+	width:100%;
+	margin:4px 0px;
+}
+
+/* Drag and Drop Elements */
+
+.drop{
+	height:150px;
+	width:100%;
+	display:block;
+}
+
+.drop-file{
+	opacity:0;
+	filter:alpha(opacity=0);
+	position:absolute;
+	z-index:100;
+	top:0;
+	left:0;
+	margin:0;
+}
+
+#drop{
+	margin:20px 0px 0px;
+	padding:55px 0px;
+	height:40px;
+	line-height:40px;
+	border:1px solid #CCC;
+	background-color:#EEE;
+	color:#DDD;
+	font-size:40px;
+	text-align:center;
+	position:relative;
+	cursor:default !important;
+}
+
+#drop:hover{
+	border:1px solid #999;
+	color:#999;
+}
+
+/* End of Drag and Drop Elements */
