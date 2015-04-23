@@ -22,6 +22,7 @@
 	
     <script src="/assets/common/loaders/simpleXYZload.js"></script>
     <script src="scripts/dist/FileSaver.js"></script>
+    <script src="config.js"></script>
 	
 	
   
@@ -164,7 +165,7 @@
     
 	var xyzRequest = new XMLHttpRequest();
 	
-	xyzRequest.open("GET", 'http://10.0.0.249/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
+	xyzRequest.open("GET", config.dtmserver + '/datapi/rasters/dtm/?format=xyz&outline='+outline+'&table='+table, true);
     
 	xyzRequest.onreadystatechange = function() {
 		if(xyzRequest.readyState==4){

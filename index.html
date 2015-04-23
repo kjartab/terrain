@@ -24,6 +24,7 @@
     <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
 	<script src="scripts/lib/leaflet-draw/dist/leaflet.draw.js"></script>
+	<script src="config.js"></script>
   
     <div class="navbar navbar-default navbar-fixed-top" id="navbar">
 		<div class="container">
@@ -139,7 +140,7 @@
     
 	var geojson = L.geoJson(null,{ style : style}).addTo(map);
         
-		$.getJSON('http://10.0.0.249/datapi/rasters/rastergrid', function (data) {
+		$.getJSON(config.dtmserver + '/datapi/rasters/rastergrid', function (data) {
 			
 			for (i=0; i<data.length; i++) {		    			
 				geojson.addData(JSON.parse(data[i][0]), {style : style});
