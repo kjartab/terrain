@@ -144,8 +144,8 @@
     var tileWmts = new ol.layer.Tile({
       extent: projectionExtent,
       source: new ol.source.WMTS({
-        url: 'http://www.webatlas.no/maptiles/tiles/webatlas-gray-vektor/wa_grid/{z}/{x}/{y}.png',
-        matrixSet: 'EPSG:25833',
+        url: 'http://www.webatlas.no/maptiles/wmts',
+        matrixSet: 'EPSG:3857',
         projection: projection,
         tileGrid: new ol.tilegrid.WMTS({
           origin: ol.extent.getTopLeft(projectionExtent),
