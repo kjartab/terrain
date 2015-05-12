@@ -9,6 +9,7 @@
 
     <link href="scripts/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/viewer.css" rel="stylesheet">	
+    <link href="css/terrain.css" rel="stylesheet">	
 </head>
 <body>	
 
@@ -27,13 +28,9 @@
 	
   
   <!-- Fixed navbar -->
-    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
-
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#"></a>
-        </div>
-    </div>
 	
+    <div id="brand">Kjartan B. / Terrain</div>
+    
 		<div id="content">
 			<div id="webgl"></div>
 		</div>
@@ -74,7 +71,10 @@
 	var camera;
 	var scene;
 	var controls;
+    var raycaster;
+    var threshold = 0.1;
 	var directionalLight;
+			var mouse = new THREE.Vector2();
 	
 		function parseSTL(geometry){
 
@@ -151,10 +151,25 @@
 		directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 		directionalLight.position.set(-600, 300, 600);
 		scene.add(directionalLight);
+        
+
+        raycaster = new THREE.Raycaster();
+        raycaster.params.PointCloud.threshold = threshold;
 		
 		document.getElementById('webgl').appendChild(renderer.domElement);
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 		render();
 	}
+    
+    
+			function onDocumentMouseMove( event ) {
+
+				event.preventDefault();
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+			}
     
 	function export_text( text ) {
 		var content = "data:application/plain;charset=utf-8," + escape( text );
@@ -197,6 +212,11 @@
 	
 	function render() {
 		controls.update();  
+        
+        raycaster.setFromCamera( mouse, camera );
+				var intersections = raycaster.intersectObjects;
+                
+                console.log(intersections);
 		requestAnimationFrame(render);
 		renderer.render(scene, camera);
 	}

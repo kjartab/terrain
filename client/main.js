@@ -1,6 +1,105 @@
 
+
+var kartan = kartan || {};
+
+
+(function(ns) {
+    
+    
+    
+    ns.kmap = (function() {
+        
+        var map;
+        
+        
+        function initialize(mapDiv) {
+            
+            map = L.map(mapDiv).setView([65, 10], 5);
+    
+        }
+        
+        
+        
+        
+        return {
+            
+            
+        }
+        
+    })();
+    
+    
+    ns.sideBar = (function() {
+        
+    })();
+    
+    
+    
+})(kartan);
+
+
 function Cloud(mapdivelement) {
 
+	map = L.map(mapdivelement).setView([56.9648487562327, 1.8675290264099], 8);
+	
+    //	map.addLayer(L.tileLayer.wms("http://opencache.statkart.no/gatekeeper/gk/gk.open?",{layers: 'topo2graatone', format: 'image/png'},{attribution:''}));
+        L.tileLayer('http://www.webatlas.no/maptiles/tiles/webatlas-standard-vektor/wa_grid/{z}/{x}/{y}.png', {
+            maxZoom: 30,
+            zIndex: 0
+        }).addTo(map);
+	
+	geojson = L.geoJson(null,{onEachFeature: this.onEachFeature, style : this.style}).addTo(map);
+	
+	drawnItems = new L.FeatureGroup();
+	map.addLayer(drawnItems);
+	
+	drawControl = new L.Control.Draw({
+			edit: { featureGroup: drawnItems },
+			position: 'bottomleft'
+		});
+	map.addControl(drawControl);
+	
+	map.on('draw:created', function (e) {
+		console.log('get');
+		var type = e.layerType,
+			layer = e.layer;
+
+		if (type === 'marker') {
+		//	K.startViewer(K.toWKT(e.layer),-1,'buffer',-1);
+		}
+		
+		if (type === 'rectangle' || type === 'polygon') {
+				console.log('getting viewer');
+			getCloud().startViewer(getCloud().toWKT(e.layer),'dtm.norge33');
+		}
+		
+		if (type === 'circle') {
+		//	K.startViewer(K.toWKT(e.layer),-1,'circle',layer._mRadius);
+			
+		}
+		map.addLayer(layer);
+	});
+	
+}
+
+	Cloud.prototype.addMapObject = function(item, list) {
+		this.addGeoJson(item);
+		this.addToList(list, item.props.name, item.props.dbid);
+	}
+
+	Cloud.prototype.addGeoJson = function(jsonobject) {	
+		geojson.addData(jsonobject, {onEachFeature: getCloud().onEachFeature, style : getCloud().style});
+	}
+
+	Cloud.prototype.addToList = function(listdiv, name, dbid) {
+		
+		var anchor = document.createElement("a");
+		anchor.className+=" list-group-item";
+		anchor.innerHTML = name;
+		anchor.dbid = dbid;
+		anchor.onclick = function() { getCloud().panToLeafletObject(dbid) };
+		listdiv.append(anchor);
+	}
 
 
 

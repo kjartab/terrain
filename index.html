@@ -14,7 +14,7 @@
     <link href="scripts/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/terrain.css" rel="stylesheet">
 	<link href="scripts/lib/leaflet-draw/dist/leaflet.draw.css" rel="stylesheet" />
-	
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	
 </head>
   
@@ -24,35 +24,61 @@
     <script src="scripts/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="scripts/lib/leaflet/dist/leaflet.js"></script>
 	<script src="scripts/lib/leaflet-draw/dist/leaflet.draw.js"></script>
+	<script src="client/select.js"></script>
 	<script src="config.js"></script>
   
-    <div class="navbar navbar-default navbar-fixed-top" id="navbar">
-		<div class="container">
-			<div class="navbar-header">
-			<a class="navbar-brand" href="#">Terrain</a>
-			</div>
-		</div>
-    </div>
 	
 <div class="wrapper">
-	<div class="col-lg-12" id="innhald">
-		<div id="map"></div>
-	</div>
-    <div style="display:none">
-        <div>
-           <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-            Dropdown
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
-          </ul>
+    <div id="map"></div>
+    
+    <div id="brand">Kjartan B. / Terrain</div>
+    
+    
+    <a id="action-button" href="#" title="" class="terrain-btn btn btn-dark btn-lg toggle">Select area</a>
+    
+    <div id="sidebar">
+        <a id="sidebar-close"  href="#" title="" class="terrain-btn btn btn-dark btn-lg toggle"><i class="fa fa-times"></i></a>
+    
+        <h2>Select options</h2>
+        <form>
+            <h3>Resampling method</h3>
+           <select class="form-control" name="resampling">
+                <option value="bilinear">Bilinear</option>
+                <option value="near">Near</option>
+                <option value="lanzcos">Lanzcos</option>
+                <option value="cubic">Cubic</option>
+                <option value="cubicspline">Cubicspline</option>
+                <option value="average">Average</option>
+                <option value="mode">Mode</option>
+                <option value="none">No resampling</option>
+            </select>
+
+            <h3>Resolution</h3>
+            <h3>X</h3>
+            <input type="number" name="x"  step="5"></input>
+            <h3>Y</h3>
+            <input type="number" name="y" step="5"></input>
+
+
+
+            <button type="button">View</button>
             
+            
+            <h3>File format</h3>
+            <select class="form-control" name="resampling_method">
+                <option value="bilinear">PNG</option>
+                <option value="bilinear">ASCII Gridded XYZ</option>
+                <option value="bilinear">USGS DEM</option>
+                <option value="bilinear">JPEG</option>
+                <option value="bilinear">VRT</option>
+            </select>
+
+            <div class="button-row">
+                <a id="download" title="" class="terrain-btn btn btn-dark btn-lg toggle">Download</a>
+                <a id="3dview" title="" class="terrain-btn btn btn-dark btn-lg toggle">3D View</a>
+            </div>
+        </form>
         
-        </div>
     </div>
     
 	
@@ -60,59 +86,59 @@
    
 	<script>
 		
-	$(window).resize(function () {
-		var h = $(window).height(), offsetTop = 40;
-		$('#map').css('height', h-offsetTop);
-		$('body').css('height', h);
-	}).resize();
-	
     
+	var map = L.map('map', {zoomControl: false}).setView([65, 10], 5);
+
     
-	var map = L.map('map').setView([56.9648487562327, 1.8675290264099], 8);
-    
-    //	map.addLayer(L.tileLayer.wms("http://opencache.statkart.no/gatekeeper/gk/gk.open?",{layers: 'topo2graatone', format: 'image/png'},{attribution:''}));
+
     L.tileLayer('http://www.webatlas.no/maptiles/tiles/webatlas-standard-vektor/wa_grid/{z}/{x}/{y}.png', {
         maxZoom: 30,
         zIndex: 0
     }).addTo(map);
 
     
+    $actionButton = $('#action-button');
+    $sidebar = $('#sidebar');
+    $viewButton = $('#3dview');
+    $downloadButton = $('#download');
     
-	var drawnItems = new L.FeatureGroup();
-	map.addLayer(drawnItems);
-	
-	drawControl = new L.Control.Draw({
-			edit: { featureGroup: drawnItems },
-			position: 'bottomleft'
-		});
-	map.addControl(drawControl);
-    
-    
-	map.on('draw:created', function (e) {
-		var type = e.layerType,
-			layer = e.layer;
-		
-		if (type === 'rectangle' || type === 'polygon') {
-				console.log('getting viewer');
-			startViewer(layerToWKT(e.layer),'dtm.norge33');
-		}
-		
-		map.addLayer(layer);
-	});
+    $('#sidebar-close').on('click', function(e) {
+        $('#sidebar').fadeOut(250); 
+        $actionButton.removeClass('editing');
+        $actionButton.text('Select area');
+        select.destroy();
+    });
     
     
-    function handleAreaSelect(polygon) {
-        
-        
-    }
+    select.init(map);
+    select.drawnCallback(function(event) {
+        $sidebar.fadeIn(250); 
+        select.disable();
+    });
     
     
-	//cloudy = new Cloud('map', 'visualize.html');
-
-	function getCloud() {
-		return cloudy;
-	}
-	
+    $downloadButton.on('click', function(e) {
+        e.preventDefault();
+    
+    });
+    
+    $viewButton.on('click', function(e) {
+        e.preventDefault();
+        startViewer(layerToWKT(select.getSelection()),'dtm.norge33');
+    });
+    
+    $actionButton.on('click', function(e) {
+        if (select.isEnabled()) {
+            select.disable();
+            $actionButton.removeClass('editing');
+            $actionButton.text('Select area');
+        } else {
+            $actionButton.addClass('editing');
+            select.enable();
+            $actionButton.html('<i class="fa fa-times"</i>');
+        }
+    });
+    
     function style(feature) {
         switch(feature.geometry.type) {
             case 'Polygon':
@@ -141,16 +167,11 @@
 	var geojson = L.geoJson(null,{ style : style}).addTo(map);
         
 		$.getJSON(config.dtmserver + '/datapi/rasters/rastergrid', function (data) {
-			
 			for (i=0; i<data.length; i++) {		    			
 				geojson.addData(JSON.parse(data[i][0]), {style : style});
 			}
-		});
-        
-        
-        
-        
-	
+	});
+    
     function startViewer(outline, table) {
 		if(outline != null) {
 			
@@ -160,6 +181,8 @@
 		}
 	}
 
+    
+    
     function layerToWKT(layer) {
 		var lng, lat, coords = [];
 		
